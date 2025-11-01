@@ -1,0 +1,36 @@
+name = "telegram-scheduler"
+main = "src/index.ts"
+compatibility_date = "2025-10-30"
+
+[vars]
+BOT_TOKEN = "8342417896:AAEMHimPF9EUCZ8OD1L7AAnYiKfyD1oj44w"
+BOT_ID = "8342417896"
+SECRET_TOKEN = "FunGuyHiKool1234"
+DEVELOPER_ID = "5693488277"
+
+[triggers]
+crons = ["* * * * *"]
+
+[[kv_namespaces]]
+binding = "DRAFT"
+id = "05036059f9ca4f738e93aad530cf578a"
+
+[[kv_namespaces]]
+binding = "QUEUE"
+id = "59eaa65c911f4989b1f171760ad02ada"
+
+[[kv_namespaces]]
+binding = "ACCESS"
+id = "0b19890aca384071b1ea90639e777d34"
+
+[[kv_namespaces]]
+binding = "DB"
+id = "8a0415e483b34cecb9d7bd19ed37d11e" # same as POSTS
+
+[[kv_namespaces]]
+binding = "SETTINGS"
+id = "097d236aaca24221835adc6ac2ee342b"
+
+[[kv_namespaces]]
+binding = "META"
+id = "ad5b2383dac744beb1ea886374b9c2aa"
