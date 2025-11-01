@@ -19,3 +19,20 @@ export async function handlePostPreview(env, userId, chatId, lang, postTimeUTC) 
 
   return await sendMessage(chatId, message, env, getPostPreviewConfirmMenu(lang));
 }
+
+import { getTimePreview12h } from "../utils/time";
+
+export async function getPostPreviewMessage({
+  env,
+  lang,
+  timezone,
+  post
+}: {
+  env: any;
+  lang: string;
+  timezone: string;
+  post: { text: string; time: string };
+}): Promise<string> {
+  const timePreview = getTimePreview12h(post.time, [timezone]);
+  return `${timePreview}\n\n${post.text}`;
+}

@@ -1,4 +1,8 @@
-export function getMainMenu(lang: string): { keyboard: string[][]; resize_keyboard: boolean } {
+export function getMainMenu(lang: string): {
+  keyboard: string[][];
+  resize_keyboard: boolean;
+  one_time_keyboard: boolean;
+} {
   const isEn = lang === "en";
   const t = (th: string, en: string) => isEn ? en : th;
 
@@ -7,6 +11,7 @@ export function getMainMenu(lang: string): { keyboard: string[][]; resize_keyboa
       [t("➕ เพิ่มโพสต์", "➕ Add Post"), t("📆 ดูโพสต์ที่ตั้งไว้", "📆 View Scheduled Posts")],
       [t("🛠 ตั้งค่า", "🛠 Settings"), t("👤 แสดงสถานะสิทธิ์", "👤 View Role Status")]
     ],
-    resize_keyboard: true
+    resize_keyboard: true,
+    one_time_keyboard: false
   };
 }

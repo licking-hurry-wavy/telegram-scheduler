@@ -82,3 +82,5 @@ export async function handleCallbackQuery(callback: any, env: any): Promise<Resp
 
 // ✅ Export alias for compatibility
 export { handleCallbackQuery as handleCallback };
+
+import { globalStartTime } from "../constants"; // ✅ แก้จาก "../index"

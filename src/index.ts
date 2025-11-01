@@ -3,7 +3,7 @@ import { handleCallback } from "./handlers/callback";
 import { runScheduledPosts } from "./handlers/cron";
 import { handleDeploy } from "./handlers/deploy";
 import { setLastDeploy } from "./kv/meta";
-import type { Env } from "./types/env"; // ✅ ใช้ type ที่คุณเตรียมไว้
+import type { Env } from "./types/env";
 
 let hasStarted = false;
 
@@ -25,13 +25,13 @@ export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
-    // ✅ trigger deploy reset ด้วยมือ
+    // ✅ Manual deploy reset
     if (url.pathname === "/deploy" && request.method === "GET") {
       await setLastDeploy(env);
       return new Response("✅ Deploy timestamp updated", { status: 200 });
     }
 
-    // ✅ startup logic เมื่อ Worker เริ่มทำงาน
+    // ✅ Startup logic (runs once per cold start)
     if (!hasStarted) {
       hasStarted = true;
       ctx.waitUntil(sendStartupGreeting(env));

@@ -14,6 +14,7 @@ import {
   getTimezoneInputMenu,
   getTimezoneConfirmMenu
 } from "../menus/timezone";
+import { globalStartTime } from "../index";
 
 function isValidTimeZone(tz: string): boolean {
   try {
@@ -35,7 +36,16 @@ function formatDate(iso: string): string {
   });
 }
 
+function formatUptime(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  return `${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
+}
+
 export async function handleMessage(message: any, env: any, request: Request): Promise<Response> {
+  const start = Date.now();
   const clientIP = request.headers.get("cf-connecting-ip") || "ไม่ทราบ IP";
   const city = request.cf?.city || "ไม่ทราบเมือง";
   const country = request.cf?.country || "ไม่ทราบประเทศ";
@@ -180,15 +190,21 @@ export async function handleMessage(message: any, env: any, request: Request): P
   }
 
   if (["🤖 เช็คสถานะบอท", "🤖 Check Bot Status"].includes(text)) {
-	        ? `🤖 Bot Status\n\n🆔 Bot ID: telegram-scheduler\n🧩 Version: 1.0.0\n\n📶 Status: ✅ Online\n⏱️ Uptime: 3 days 12 hours\n⚡ Response Time: 283 ms\n🌐 Time Zone: Asia/Bangkok`
-      : `🤖 สถานะบอท\n\n🆔 รหัสบอท: telegram-scheduler\n🧩 เวอร์ชัน: 1.0.0\n\n📶 สถานะ: ✅ ออนไลน์\n⏱️ เวลาเปิดใช้งาน: 3 วัน 12 ชั่วโมง\n⚡ เวลาตอบสนอง: 283 มิลลิวินาที\n🌐 เขตเวลา: Asia/Bangkok`;
+    const now = Date.now();
+    const uptime = formatUptime(now - globalStartTime);
+    const responseTime = now - start;
+
+    const msg = lang === "en"
+      ? `🤖 Bot Status\n\n🆔 Bot ID: telegram-scheduler\n🧩 Version: 1.0.0\n\n📶 Status: ✅ Online\n⏱️ Uptime: ${uptime}\n⚡ Response Time: ${responseTime} ms\n🌐 Time Zone: ${settings.timezone || "(not set)"}`
+      : `🤖 สถานะบอท\n\n🆔 รหัสบอท: telegram-scheduler\n🧩 เวอร์ชัน: 1.0.0\n\n📶 สถานะ: ✅ ออนไลน์\n⏱️ เวลาเปิดใช้งาน: ${uptime}\n⚡ เวลาตอบสนอง: ${responseTime} มิลลิวินาที\n🌐 เขตเวลา: ${settings.timezone || "(ยังไม่ได้ตั้ง)"}`;
     return await sendMessage(chatId, msg, env);
   }
 
   if (["🌐 เช็คสถานะเซิร์ฟเวอร์", "🌐 Check Server Status"].includes(text)) {
+    const responseTime = Date.now() - start;
     const msg = lang === "en"
-      ? `🌐 Server Status\n\n📶 Status: ✅ Online\n🖥️ IP: ${clientIP}\n📍 Location: ${city}, ${country}\n\n⏱️ Uptime: 5 days 4 hours\n⚡ Response Time: 107 ms\n🌐 Time Zone: Asia/Bangkok`
-      : `🌐 สถานะเซิร์ฟเวอร์\n\n📶 สถานะ: ✅ ออนไลน์\n🖥️ IP: ${clientIP}\n📍 ตำแหน่ง: ${city}, ${country}\n\n⏱️ เวลาเปิดใช้งาน: 5 วัน 4 ชั่วโมง\n⚡ เวลาตอบสนอง: 107 มิลลิวินาที\n🌐 เขตเวลา: Asia/Bangkok`;
+      ? `🌐 Server Status\n\n📶 Status: ✅ Online\n🖥️ IP: ${clientIP}\n📍 Location: ${city}, ${country}\n\n⚡ Response Time: ${responseTime} ms\n🌐 Time Zone: ${settings.timezone || "(not set)"}`
+      : `🌐 สถานะเซิร์ฟเวอร์\n\n📶 สถานะ: ✅ ออนไลน์\n🖥️ IP: ${clientIP}\n📍 ตำแหน่ง: ${city}, ${country}\n\n⚡ เวลาตอบสนอง: ${responseTime} มิลลิวินาที\n🌐 เขตเวลา: ${settings.timezone || "(ยังไม่ได้ตั้ง)"}`;
     return await sendMessage(chatId, msg, env);
   }
 
@@ -198,3 +214,5 @@ export async function handleMessage(message: any, env: any, request: Request): P
 
   return await sendMessage(chatId, fallback, env, getMainMenu(lang));
 }
+
+import { globalStartTime } from "../constants"; // ✅ แก้จาก "../index"

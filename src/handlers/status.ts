@@ -17,12 +17,6 @@ export function getMemoryUsage(): string {
   return "ไม่สามารถตรวจสอบได้";
 }
 
-export function getClientIP(request: Request): string {
-  return request?.headers?.get("cf-connecting-ip")
-    || request?.headers?.get("x-forwarded-for")
-    || "ไม่ทราบ IP";
-}
-
 export function measureLatency(start: number): string {
   const end = Date.now();
   const diffMs = end - start;
@@ -32,6 +26,32 @@ export function measureLatency(start: number): string {
 
 export function getBotVersion(env: any): string {
   return env.BOT_VERSION || "ไม่ทราบเวอร์ชัน";
+}
+
+export function getClientIP(request: Request): string {
+  return request?.headers?.get("cf-connecting-ip")
+    || request?.headers?.get("x-forwarded-for")
+    || "ไม่ทราบ IP";
+}
+
+export function getStatusMessage({
+  role,
+  timezone,
+  lang
+}: {
+  role: string;
+  timezone: string;
+  lang: string;
+}): string {
+  const roleMap = {
+    admin: lang === "th" ? "ผู้ดูแลระบบ" : "Admin",
+    developer: lang === "th" ? "นักพัฒนา" : "Developer",
+    editor: lang === "th" ? "ผู้แก้ไข" : "Editor",
+    user: lang === "th" ? "ผู้ใช้ทั่วไป" : "User"
+  };
+
+  const roleLabel = roleMap[role] || (lang === "th" ? `บทบาท: ${role}` : `Role: ${role}`);
+  return `${roleLabel}\nTimezone: ${timezone}`;
 }
 
 export async function handleBotStatus(request: Request, env: any, lang: string): Promise<string> {
@@ -69,8 +89,8 @@ export async function handleBotStatus(request: Request, env: any, lang: string):
 export async function handleServerStatus(request: Request, env: any, lang: string): Promise<string> {
   const start = Date.now();
   const latency = measureLatency(start);
-  const memory = "128.7 MB"; // mock หรือดึงจากระบบจริง
-  const uptime = "27 วัน 18 ชั่วโมง 5 นาที"; // mock หรือดึงจากระบบจริง
+  const memory = "128.7 MB"; // mock
+  const uptime = "27 วัน 18 ชั่วโมง 5 นาที"; // mock
   const ip = getClientIP(request);
   const now = new Date().toLocaleString(lang === "en" ? "en-GB" : "th-TH", {
     timeZone: "Asia/Singapore",
